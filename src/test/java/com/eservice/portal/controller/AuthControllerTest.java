@@ -70,6 +70,16 @@ public class AuthControllerTest {
 		Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK);
 	}
 	
+	@Test
+	public void testAuthenticationFailed() {
+		LoginRequest loginRequest = getLoginRequest();
+		loginRequest.setUsername("customer5");
+		when(authenticationManager.authenticate(any(Authentication.class))).thenReturn(getAuthentication(loginRequest));
+		when(jwtUtils.generateJwtToken(any(Authentication.class))).thenReturn(null);
+		ResponseEntity<?> response = authControllerTest.authenticateUser(getLoginRequest());
+		JwtResponse jwtResponse = (JwtResponse) response.getBody();
+		Assertions.assertEquals(jwtResponse.getAccessToken(), null);
+	}
 	private LoginRequest getLoginRequest() {
 		LoginRequest loginRequest  = new LoginRequest();
 		loginRequest.setUsername("customer");
